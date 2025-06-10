@@ -8,5 +8,5 @@ export interface ScheduleDataItem {
     RecurrenceRule?: string;
     RecurrenceException?: string;
     RecurrenceID?: number;
-    Source?: string;
+    Location?: string;
 }

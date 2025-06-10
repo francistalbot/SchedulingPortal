@@ -11,6 +11,6 @@ export const EventTemplate = (props: ScheduleDataItem) => (
             {instance.formatDate(props.StartTime, { skeleton: "hm" })} -{" "}
             {instance.formatDate(props.EndTime, { skeleton: "hm" })}
         </div>
-        <div className="e-location">{props.Source}prout</div>
+        <div className="e-location">{props.Location}</div>
     </div>
 );
