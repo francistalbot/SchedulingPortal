@@ -1,4 +1,4 @@
-import Scheduler from '@/Components/Scheduler';
+import Scheduler from '@/Components/Scheduler/Scheduler';
 import { PageProps } from '@/types';
 import { Head, Link } from '@inertiajs/react';
 
