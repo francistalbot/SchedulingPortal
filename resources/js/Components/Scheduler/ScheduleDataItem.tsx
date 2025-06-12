@@ -9,4 +9,7 @@ export interface ScheduleDataItem {
     RecurrenceException?: string;
     RecurrenceID?: number;
     Location?: string;
+    SuccursalID?: number;
+    ComiteID?: number;
+    Sessions?: { RoleID: string; BenevoleID: string }[];
 }
