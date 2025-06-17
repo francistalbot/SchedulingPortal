@@ -11,5 +11,16 @@ export interface ScheduleDataItem {
     Location?: string;
     SuccursalID?: number;
     ComiteID?: number;
-    Sessions?: { RoleID: string; BenevoleID: string }[];
+    Postes?: SchedulePoste[];
+}
+
+export interface SchedulePoste {
+    Id: number;
+    Name: string;
+    Affectations: AffectationBenevole[];
+}
+
+export interface AffectationBenevole {
+    Date: Date; // Date de l'occurrence
+    BenevoleId?: number; // null si non assigné
 }

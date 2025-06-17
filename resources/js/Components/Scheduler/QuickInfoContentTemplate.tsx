@@ -1,8 +1,10 @@
 import { Internationalization } from "@syncfusion/ej2-base";
+import { BenevoleData, RoleData } from "./datasource";
 
 // https://ej2.syncfusion.com/react/documentation/api/schedule/#quickinfotemplates
+
 export const QuickInfoContentTemplate = (props: {
-    [key: string]: string;
+    [key: string]: any;
 }): JSX.Element => {
     const intl: Internationalization = new Internationalization();
 
@@ -91,6 +93,49 @@ export const QuickInfoContentTemplate = (props: {
                             ) : (
                                 ""
                             )}
+                            {/* Affichage des postes à pourvoir */}
+                            {props.Postes !== undefined &&
+                                props.Postes.length > 0 && (
+                                    <div className="postes-section">
+                                        <h4>Postes à pourvoir</h4>
+                                        <ul>
+                                            {props.Postes.map((poste: any) => (
+                                                <li key={poste.Id}>
+                                                    <strong>
+                                                        {poste.Name}
+                                                    </strong>
+                                                    <select
+                                                        defaultValue={
+                                                            poste
+                                                                .Affectations?.[0]
+                                                                ?.BenevoleId ||
+                                                            ""
+                                                        }
+                                                        // TODO: Ajoute ici un gestionnaire pour sauvegarder l'affectation
+                                                    >
+                                                        <option value="">
+                                                            -- Choisir un
+                                                            bénévole --
+                                                        </option>
+                                                        {BenevoleData.map(
+                                                            (b) => (
+                                                                <option
+                                                                    key={b.Id}
+                                                                    value={b.Id}
+                                                                >
+                                                                    {
+                                                                        b.BenevoleText
+                                                                    }
+                                                                </option>
+                                                            )
+                                                        )}
+                                                    </select>
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    </div>
+                                    /*  */
+                                )}
                         </div>
                     </div>
                 </>
