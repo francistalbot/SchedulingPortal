@@ -31,14 +31,25 @@ dataSource: EventsData,
 template: EventTemplate,
     };
 
-    const eventSettings = { dataSource: EventsData, template: EventTemplate };
+    const onPopupOpen = (args: PopupOpenEventArgs) => {
+        if (args.type === "Editor") {
+            console.log(args.data);
+        }
+    };
+
+    const onPopupClose = (args: PopupCloseEventArgs) => {
+        if (args.type === "Editor") {
+            console.log(args.data);
+        }
+    };
 
     return (
         <ScheduleComponent
             style={{ marginTop: "100px" }}
             eventSettings={eventSettings}
             quickInfoTemplates={quickInfoTemplates}
-            selectedDate={new Date(2018, 3, 1)}
+            popupOpen={onPopupOpen}
+            popupClose={onPopupClose}
         >
             <ViewsDirective>
                 <ViewDirective option="Day" />
