@@ -14,6 +14,8 @@ import {
 import { EventTemplate } from "./EventTemplate";
 import { ScheduleDataItem } from "./ScheduleDataItem";
 import { QuickInfoContentTemplate } from "./QuickInfoContentTemplate";
+import { EditorTemplate } from "./EditorTemplate";
+
 import { SuccursalData, ComiteData, EventsData } from "./datasource";
 import {
     PopupOpenEventArgs,
@@ -26,6 +28,7 @@ export default function Scheduler() {
     const quickInfoTemplates: QuickInfoTemplatesModel = {
         content: QuickInfoContentTemplate,
     };
+
     const eventSettings: EventSettingsModel = {
         dataSource: EventsData,
         template: EventTemplate,
@@ -42,10 +45,10 @@ export default function Scheduler() {
             console.log(args.data);
         }
     };
-
     return (
         <ScheduleComponent
-            style={{ marginTop: "100px" }}
+            width="100%"
+            height="650px"
             eventSettings={eventSettings}
             group={{
                 byGroupID: false,
@@ -55,6 +58,7 @@ export default function Scheduler() {
             currentView="Month"
             enableAdaptiveUI={true}
             selectedDate={new Date(2018, 5, 1)}
+            editorTemplate={EditorTemplate}
             popupOpen={onPopupOpen}
             popupClose={onPopupClose}
         >
@@ -65,17 +69,6 @@ export default function Scheduler() {
                 <ViewDirective option="Month" />
             </ViewsDirective>
             <ResourcesDirective>
-                <ResourceDirective
-                    field="ComiteID"
-                    title="Comite"
-                    name="Comites"
-                    allowMultiple={false}
-                    dataSource={ComiteData}
-                    textField="ComiteText"
-                    idField="Id"
-                    colorField="OwnerColor"
-                />
-
                 <ResourceDirective
                     field="SuccursalID"
                     title="Succursal"
