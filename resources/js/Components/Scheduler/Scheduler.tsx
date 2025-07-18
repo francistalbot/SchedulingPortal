@@ -15,12 +15,24 @@ import { EventTemplate } from "./EventTemplate";
 import { ScheduleDataItem } from "./ScheduleDataItem";
 import { QuickInfoContentTemplate } from "./QuickInfoContentTemplate";
 import { SuccursalData, ComiteData, EventsData } from "./datasource"; 
+import {
+    PopupOpenEventArgs,
+    PopupCloseEventArgs,
+    EventSettingsModel,
+    QuickInfoTemplatesModel,
+} from "@syncfusion/ej2-react-schedule";
 
-export default function Scheduler(this: any) {
-    const quickInfoTemplates = {
-        content: QuickInfoContentTemplate.bind(this),
+export default function Scheduler() {
+    const quickInfoTemplates: QuickInfoTemplatesModel = {
+        content: QuickInfoContentTemplate,
     };
+    const eventSettings: EventSettingsModel = {
+dataSource: EventsData,
+template: EventTemplate,
+    };
+
     const eventSettings = { dataSource: EventsData, template: EventTemplate };
+
     return (
         <ScheduleComponent
             style={{ marginTop: "100px" }}

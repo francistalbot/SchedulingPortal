@@ -2,7 +2,7 @@ import { Internationalization } from "@syncfusion/ej2-base";
 import { BenevoleData, RoleData } from "./datasource";
 
 // https://ej2.syncfusion.com/react/documentation/api/schedule/#quickinfotemplates
-
+// https://ej2.syncfusion.com/react/documentation/schedule/how-to/show-quick-info-template?cs-save-lang=1&cs-lang=ts
 export const QuickInfoContentTemplate = (props: {
     [key: string]: any;
 }): JSX.Element => {
