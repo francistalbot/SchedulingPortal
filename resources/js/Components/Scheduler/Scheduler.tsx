@@ -14,7 +14,7 @@ import {
 import { EventTemplate } from "./EventTemplate";
 import { ScheduleDataItem } from "./ScheduleDataItem";
 import { QuickInfoContentTemplate } from "./QuickInfoContentTemplate";
-import { SuccursalData, ComiteData, EventsData } from "./datasource"; 
+import { SuccursalData, ComiteData, EventsData } from "./datasource";
 import {
     PopupOpenEventArgs,
     PopupCloseEventArgs,
@@ -27,8 +27,8 @@ export default function Scheduler() {
         content: QuickInfoContentTemplate,
     };
     const eventSettings: EventSettingsModel = {
-dataSource: EventsData,
-template: EventTemplate,
+        dataSource: EventsData,
+        template: EventTemplate,
     };
 
     const onPopupOpen = (args: PopupOpenEventArgs) => {
@@ -47,7 +47,14 @@ template: EventTemplate,
         <ScheduleComponent
             style={{ marginTop: "100px" }}
             eventSettings={eventSettings}
+            group={{
+                byGroupID: false,
+                resources: ["Succursals"],
+            }}
             quickInfoTemplates={quickInfoTemplates}
+            currentView="Month"
+            enableAdaptiveUI={true}
+            selectedDate={new Date(2018, 5, 1)}
             popupOpen={onPopupOpen}
             popupClose={onPopupClose}
         >
@@ -58,9 +65,26 @@ template: EventTemplate,
                 <ViewDirective option="Month" />
             </ViewsDirective>
             <ResourcesDirective>
-                <ResourceDirective field='ComiteId' title='Comite' name='Comites' allowMultiple={true} dataSource={ComiteData} textField='ComiteText' idField='Id' colorField='OwnerColor'>
-                <ResourceDirective field='SuccursalId' title='Succursal' name='Succursals' allowMultiple={true} dataSource={SuccursalData} textField='SuccursalText' idField='Id' colorField='OwnerColor'>
-            </ResourceDirective></ResourceDirective>
+                <ResourceDirective
+                    field="ComiteID"
+                    title="Comite"
+                    name="Comites"
+                    allowMultiple={false}
+                    dataSource={ComiteData}
+                    textField="ComiteText"
+                    idField="Id"
+                    colorField="OwnerColor"
+                />
+
+                <ResourceDirective
+                    field="SuccursalID"
+                    title="Succursal"
+                    name="Succursals"
+                    allowMultiple={false}
+                    dataSource={SuccursalData}
+                    textField="SuccursalText"
+                    idField="Id"
+                />
             </ResourcesDirective>
             <Inject services={[Day, Week, WorkWeek, Month, Agenda]} />
         </ScheduleComponent>
