@@ -1,23 +1,23 @@
 import { ScheduleDataItem } from "./ScheduleDataItem";
 
 export const SuccursalData = [
-    { SuccursalText: "Vilray", Id: 1, OwnerColor: "#ffaa00" },
-    { SuccursalText: "Plateau", Id: 2, OwnerColor: "#f8a398" },
+    { Text: "Vilray", Id: 1, OwnerColor: "#ffaa00" },
+    { Text: "Plateau", Id: 2, OwnerColor: "#f8a398" },
 ];
 
 export const ComiteData = [
-    { ComiteText: "Comité Bois", Id: 1, OwnerColor: "#f8a398" },
-    { ComiteText: "Comité Outil", Id: 2, OwnerColor: "#7499e1" },
+    { Text: "Comité Bois", Id: 1, OwnerColor: "#f8a398" },
+    { Text: "Comité Outil", Id: 2, OwnerColor: "#7499e1" },
 ];
 
 export const RoleData = [
-    { RoleText: "Accueil", Id: 1 },
-    { RoleText: "Decouverte", Id: 2 },
+    { Text: "Accueil", Id: 1 },
+    { Text: "Decouverte", Id: 2 },
 ];
 
 export const BenevoleData = [
-    { BenevoleText: "Francis", Id: 1 },
-    { BenevoleText: "Benois", Id: 2 },
+    { Text: "Francis", Id: 1 },
+    { Text: "Benois", Id: 2 },
 ];
 export const EventsData: ScheduleDataItem[] = [
     {
@@ -50,7 +50,7 @@ export const EventsData: ScheduleDataItem[] = [
             },
         ],
     },
-    {
+    /* {
         Id: 2,
         Subject: "Test report Validation",
         StartTime: new Date(2018, 5, 2, 10, 30),
@@ -220,5 +220,5 @@ export const EventsData: ScheduleDataItem[] = [
         RecurrenceRule: "FREQ=WEEKLY;INTERVAL=1;BYDAY=MO,TU,WE,TH,FR",
         SuccursalID: 2,
         ComiteID: 1,
-    },
+    },*/
 ];

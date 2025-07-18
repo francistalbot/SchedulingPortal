@@ -82,7 +82,7 @@ export default function Scheduler() {
                     name="Succursals"
                     allowMultiple={false}
                     dataSource={SuccursalData}
-                    textField="SuccursalText"
+                    textField="Text"
                     idField="Id"
                 />
             </ResourcesDirective>
