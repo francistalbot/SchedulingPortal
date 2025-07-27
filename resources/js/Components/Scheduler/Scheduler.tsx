@@ -12,10 +12,7 @@ import {
     ResourceDirective,
 } from "@syncfusion/ej2-react-schedule";
 import { EventTemplate } from "./EventTemplate";
-import { ScheduleDataItem } from "./ScheduleDataItem";
 import { QuickInfoContentTemplate } from "./QuickInfoContentTemplate";
-import { EditorTemplate } from "./EditorTemplate";
-
 import { SuccursalData, ComiteData, EventsData } from "./datasource";
 import {
     PopupOpenEventArgs,
@@ -23,6 +20,7 @@ import {
     EventSettingsModel,
     QuickInfoTemplatesModel,
 } from "@syncfusion/ej2-react-schedule";
+import { setupEditorCustomFields } from "./setupEditorCustomFields";
 
 export default function Scheduler() {
     const quickInfoTemplates: QuickInfoTemplatesModel = {
@@ -35,9 +33,7 @@ export default function Scheduler() {
     };
 
     const onPopupOpen = (args: PopupOpenEventArgs) => {
-        if (args.type === "Editor") {
-            console.log(args.data);
-        }
+        setupEditorCustomFields(args);
     };
 
     const onPopupClose = (args: PopupCloseEventArgs) => {
@@ -58,7 +54,6 @@ export default function Scheduler() {
             currentView="Month"
             enableAdaptiveUI={true}
             selectedDate={new Date(2018, 5, 1)}
-            editorTemplate={EditorTemplate}
             popupOpen={onPopupOpen}
             popupClose={onPopupClose}
         >
