@@ -10,7 +10,7 @@ export const ComiteData = [
     { Text: "Comité Outil", Id: 2, OwnerColor: "#7499e1" },
 ];
 
-export const RoleData = [
+export const PosteData = [
     { Text: "Accueil", Id: 1 },
     { Text: "Decouverte", Id: 2 },
 ];

@@ -13,7 +13,7 @@ import {
 } from "@syncfusion/ej2-react-schedule";
 import { EventTemplate } from "./EventTemplate";
 import { QuickInfoContentTemplate } from "./QuickInfoContentTemplate";
-import { SuccursalData, ComiteData, EventsData } from "./datasource";
+import { SuccursalData, EventsData } from "./datasource";
 import {
     PopupOpenEventArgs,
     PopupCloseEventArgs,
@@ -50,9 +50,9 @@ export default function Scheduler() {
                 byGroupID: false,
                 resources: ["Succursals"],
             }}
+            enableAdaptiveUI={true}
             quickInfoTemplates={quickInfoTemplates}
             currentView="Month"
-            enableAdaptiveUI={true}
             selectedDate={new Date(2018, 5, 1)}
             popupOpen={onPopupOpen}
             popupClose={onPopupClose}
@@ -64,7 +64,7 @@ export default function Scheduler() {
                 <ViewDirective option="Month" />
             </ViewsDirective>
             <ResourcesDirective>
-                <ResourceDirective
+               <ResourceDirective
                     field="SuccursalID"
                     title="Succursal"
                     name="Succursals"
@@ -72,7 +72,7 @@ export default function Scheduler() {
                     dataSource={SuccursalData}
                     textField="Text"
                     idField="Id"
-                />
+                /> 
             </ResourcesDirective>
             <Inject services={[Day, Week, WorkWeek, Month, Agenda]} />
         </ScheduleComponent>
