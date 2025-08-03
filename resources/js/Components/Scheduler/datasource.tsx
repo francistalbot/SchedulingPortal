@@ -6,18 +6,59 @@ export const SuccursalData = [
 ];
 
 export const ComiteData = [
-    { Text: "Comité Bois", Id: 1, OwnerColor: "#f8a398" },
-    { Text: "Comité Outil", Id: 2, OwnerColor: "#7499e1" },
+    { Text: "Comité Bois", Id: 1, OwnerColor: "#f8a398", SuccursalId: 1 },
+    { Text: "Comité Outil", Id: 2, OwnerColor: "#7499e1", SuccursalId: 1 },
+    { Text: "Comité Vélo", Id: 3, OwnerColor: "#4caf50", SuccursalId: 2 },
+    { Text: "Comité Outil", Id: 4, OwnerColor: "#ff9800", SuccursalId: 2 },
 ];
-
 export const PosteData = [
     { Text: "Accueil", Id: 1 },
     { Text: "Decouverte", Id: 2 },
 ];
 
 export const BenevoleData = [
-    { Text: "Francis", Id: 1 },
-    { Text: "Benois", Id: 2 },
+    { Name: "Francis", Id: 1, ComiteId: 1 },
+    { Name: "Benois", Id: 2, ComiteId: 1 },
+    { Name: "Jean", Id: 3, ComiteId: 2 },
+    { Name: "Marie", Id: 4, ComiteId: 2 },
+    { Name: "Lucie", Id: 5, ComiteId: 3 },
+    { Name: "Paul", Id: 6, ComiteId: 3 },
+    { Name: "Pierre", Id: 7, ComiteId: 4 },
+    { Name: "Sophie", Id: 8, ComiteId: 4 },
+    { Name: "Alice", Id: 9, ComiteId: 1 },
+    { Name: "Bob", Id: 10, ComiteId: 2 },
+    { Name: "Charlie", Id: 11, ComiteId: 3 },
+    { Name: "David", Id: 12, ComiteId: 4 },
+];
+export const AffectationData = [
+    {
+        Id: 1,
+        Date: new Date(2018, 5, 1, 10, 0),
+        PosteID: 1,
+        BenevoleID: 1,
+        ScheduleDataItemID: 1,
+    },
+    {
+        Id: 2,
+        Date: new Date(2018, 5, 1, 10, 0),
+        PosteID: 2,
+        BenevoleID: null,
+        ScheduleDataItemID: 1,
+    },
+    {
+        Id: 3,
+        Date: new Date(2018, 5, 2, 10, 30),
+        PosteID: 1,
+        BenevoleID: null,
+        ScheduleDataItemID: 2,
+    },
+    {
+        Id: 4,
+        Date: new Date(2018, 5, 2, 11, 0),
+        PosteID: 2,
+        BenevoleID: null,
+        ScheduleDataItemID: 2,
+    },
 ];
 export const EventsData: ScheduleDataItem[] = [
     {
@@ -28,27 +69,7 @@ export const EventsData: ScheduleDataItem[] = [
         RecurrenceRule: "FREQ=WEEKLY;INTERVAL=1;BYDAY=MO,TU,WE,TH,FR",
         SuccursalID: 1,
         ComiteID: 1,
-        Postes: [
-            {
-                Id: 1,
-                Name: "Accueil",
-                Affectations: [
-                    { Date: new Date(2024, 5, 20), BenevoleId: 101 },
-                    { Date: new Date(2024, 5, 27), BenevoleId: 102 },
-                ],
-            },
-            {
-                Id: 2,
-                Name: "Distribution",
-                Affectations: [
-                    {
-                        Date: new Date(2024, 5, 20),
-                        BenevoleId: 103,
-                    },
-                    { Date: new Date(2024, 5, 27) }, // poste non pourvu ce jour-là
-                ],
-            },
-        ],
+        PosteIDs: [1, 2],
     },
     /* {
         Id: 2,

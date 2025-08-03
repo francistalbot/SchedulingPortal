@@ -11,16 +11,18 @@ export interface ScheduleDataItem {
     Location?: string;
     SuccursalID?: number;
     ComiteID?: number;
-    Postes?: SchedulePoste[];
+    PosteIDs?: number[];
 }
 
-export interface SchedulePoste {
+export interface Poste {
     Id: number;
     Name: string;
-    Affectations: AffectationBenevole[];
 }
 
-export interface AffectationBenevole {
-    Date: Date; // Date de l'occurrence
-    BenevoleId?: number; // null si non assigné
+export interface Affectation {
+    Id: number;
+    Date: Date; // Date de l'occurrence spécifique
+    PosteID: number; // Référence vers Poste
+    BenevoleID?: number; // Référence vers Bénévole (null si non assigné)
+    ScheduleDataItemID: number; // Référence vers l'événement parent
 }
