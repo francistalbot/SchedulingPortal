@@ -1,5 +1,5 @@
 import { Internationalization } from "@syncfusion/ej2-base";
-import { BenevoleData, PosteData, AffectationData } from "./datasource";
+import { benevoleData, posteData, affectationData } from "./datasource";
 
 // https://ej2.syncfusion.com/react/documentation/api/schedule/#quickinfotemplates
 // https://ej2.syncfusion.com/react/documentation/schedule/how-to/show-quick-info-template?cs-save-lang=1&cs-lang=ts
@@ -8,7 +8,7 @@ export const QuickInfoContentTemplate = (props: {
 }): JSX.Element => {
     const intl: Internationalization = new Internationalization();
 
-    const currentAffectations = AffectationData.filter(
+    const currentAffectations = affectationData.filter(
         (affectation) =>
             affectation.ScheduleDataItemID === props.Id &&
             affectation.Date.getFullYear() ===
@@ -19,7 +19,7 @@ export const QuickInfoContentTemplate = (props: {
                 new Date(props.StartTime).getDate() &&
             props.PosteIDs.includes(affectation.PosteID)
     );
-    console.log("currentAffectations", currentAffectations);
+    //  console.log("currentAffectations", currentAffectations);
 
     const formatDateRange = (data: { [key: string]: string }): string => {
         const startTime = new Date(data.StartTime);
@@ -107,26 +107,32 @@ export const QuickInfoContentTemplate = (props: {
                                 ""
                             )}
                             {/* Affichage des postes à pourvoir */}
-                            {currentAffectations !== undefined &&
-                                currentAffectations.length > 0 && (
+                            {props.PosteIDs !== undefined &&
+                                props.PosteIDs.length > 0 && (
                                     <div className="postes-section">
                                         <h4>Postes à pourvoir</h4>
                                         <ul>
-                                            {currentAffectations.map(
-                                                (affectation: any) => (
-                                                    <li key={affectation.Id}>
+                                            {props.PosteIDs.map(
+                                                (posteID: any) => (
+                                                    <li key={posteID}>
                                                         <strong>
-                                                            {affectation.PosteID
-                                                                ? PosteData.find(
+                                                            {posteID
+                                                                ? posteData.find(
                                                                       (p) =>
                                                                           p.Id ===
-                                                                          affectation.PosteID
-                                                                  )?.Text
+                                                                          posteID
+                                                                  )?.Name
                                                                 : ""}
                                                         </strong>
                                                         <select
                                                             defaultValue={
-                                                                affectation.BenevoleId ||
+                                                                currentAffectations.find(
+                                                                    (
+                                                                        affectation
+                                                                    ) =>
+                                                                        affectation.PosteID ===
+                                                                        posteID
+                                                                )?.BenevoleID ||
                                                                 ""
                                                             }
                                                             // TODO: Ajoute ici un gestionnaire pour sauvegarder l'affectation
@@ -135,26 +141,32 @@ export const QuickInfoContentTemplate = (props: {
                                                                 -- Choisir un
                                                                 bénévole --
                                                             </option>
-                                                            {BenevoleData.filter(
-                                                                (benevole) =>
-                                                                    benevole.ComiteId ===
-                                                                    props.ComiteID
-                                                            ).map(
-                                                                (benevole) => (
-                                                                    <option
-                                                                        key={
-                                                                            benevole.Id
-                                                                        }
-                                                                        value={
-                                                                            benevole.Id
-                                                                        }
-                                                                    >
-                                                                        {
-                                                                            benevole.Name
-                                                                        }
-                                                                    </option>
+                                                            {benevoleData
+                                                                .filter(
+                                                                    (
+                                                                        benevole
+                                                                    ) =>
+                                                                        benevole.ComiteId ===
+                                                                        props.ComiteID
                                                                 )
-                                                            )}
+                                                                .map(
+                                                                    (
+                                                                        benevole
+                                                                    ) => (
+                                                                        <option
+                                                                            key={
+                                                                                benevole.Id
+                                                                            }
+                                                                            value={
+                                                                                benevole.Id
+                                                                            }
+                                                                        >
+                                                                            {
+                                                                                benevole.Name
+                                                                            }
+                                                                        </option>
+                                                                    )
+                                                                )}
                                                         </select>
                                                     </li>
                                                 )

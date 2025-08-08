@@ -1,22 +1,22 @@
-import { ScheduleDataItem } from "./ScheduleDataItem";
+import { Affectation, Poste, Event } from "./ScheduleDataItem";
 
-export const SuccursalData = [
-    { Text: "Vilray", Id: 1, OwnerColor: "#ffaa00" },
-    { Text: "Plateau", Id: 2, OwnerColor: "#f8a398" },
+export const succursalData = [
+    { Name: "Vilray", Id: 1, OwnerColor: "#ffaa00" },
+    { Name: "Plateau", Id: 2, OwnerColor: "#f8a398" },
 ];
 
-export const ComiteData = [
-    { Text: "Comité Bois", Id: 1, OwnerColor: "#f8a398", SuccursalId: 1 },
-    { Text: "Comité Outil", Id: 2, OwnerColor: "#7499e1", SuccursalId: 1 },
-    { Text: "Comité Vélo", Id: 3, OwnerColor: "#4caf50", SuccursalId: 2 },
-    { Text: "Comité Outil", Id: 4, OwnerColor: "#ff9800", SuccursalId: 2 },
+export const comiteData = [
+    { Name: "Comité Bois", Id: 1, OwnerColor: "#f8a398", SuccursalId: 1 },
+    { Name: "Comité Outil", Id: 2, OwnerColor: "#7499e1", SuccursalId: 1 },
+    { Name: "Comité Vélo", Id: 3, OwnerColor: "#4caf50", SuccursalId: 2 },
+    { Name: "Comité Outil", Id: 4, OwnerColor: "#ff9800", SuccursalId: 2 },
 ];
-export const PosteData = [
-    { Text: "Accueil", Id: 1 },
-    { Text: "Decouverte", Id: 2 },
+export const posteData = [
+    { Name: "Accueil", Id: 1 },
+    { Name: "Decouverte", Id: 2 },
 ];
 
-export const BenevoleData = [
+export const benevoleData = [
     { Name: "Francis", Id: 1, ComiteId: 1 },
     { Name: "Benois", Id: 2, ComiteId: 1 },
     { Name: "Jean", Id: 3, ComiteId: 2 },
@@ -30,7 +30,7 @@ export const BenevoleData = [
     { Name: "Charlie", Id: 11, ComiteId: 3 },
     { Name: "David", Id: 12, ComiteId: 4 },
 ];
-export const AffectationData = [
+export const affectationData: Affectation[] = [
     {
         Id: 1,
         Date: new Date(2018, 5, 1, 10, 0),
@@ -42,25 +42,22 @@ export const AffectationData = [
         Id: 2,
         Date: new Date(2018, 5, 1, 10, 0),
         PosteID: 2,
-        BenevoleID: null,
         ScheduleDataItemID: 1,
     },
     {
         Id: 3,
         Date: new Date(2018, 5, 2, 10, 30),
         PosteID: 1,
-        BenevoleID: null,
         ScheduleDataItemID: 2,
     },
     {
         Id: 4,
         Date: new Date(2018, 5, 2, 11, 0),
         PosteID: 2,
-        BenevoleID: null,
         ScheduleDataItemID: 2,
     },
 ];
-export const EventsData: ScheduleDataItem[] = [
+export const eventsData: Event[] = [
     {
         Id: 1,
         Subject: "Developers Meeting",

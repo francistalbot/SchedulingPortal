@@ -13,27 +13,26 @@ import {
 } from "@syncfusion/ej2-react-schedule";
 import { EventTemplate } from "./EventTemplate";
 import { QuickInfoContentTemplate } from "./QuickInfoContentTemplate";
-import { SuccursalData, EventsData } from "./datasource";
+import { succursalData, eventsData } from "./datasource";
 import {
     PopupOpenEventArgs,
     PopupCloseEventArgs,
     EventSettingsModel,
     QuickInfoTemplatesModel,
 } from "@syncfusion/ej2-react-schedule";
-import { setupEditorCustomFields } from "./setupEditorCustomFields";
-
+import { customizeEditorTemplate } from "./customizeEditorTemplate";
 export default function Scheduler() {
     const quickInfoTemplates: QuickInfoTemplatesModel = {
         content: QuickInfoContentTemplate,
     };
 
     const eventSettings: EventSettingsModel = {
-        dataSource: EventsData,
+        dataSource: eventsData,
         template: EventTemplate,
     };
 
     const onPopupOpen = (args: PopupOpenEventArgs) => {
-        setupEditorCustomFields(args);
+        customizeEditorTemplate(args);
     };
 
     const onPopupClose = (args: PopupCloseEventArgs) => {
@@ -64,15 +63,15 @@ export default function Scheduler() {
                 <ViewDirective option="Month" />
             </ViewsDirective>
             <ResourcesDirective>
-               <ResourceDirective
+                <ResourceDirective
                     field="SuccursalID"
                     title="Succursal"
                     name="Succursals"
                     allowMultiple={false}
-                    dataSource={SuccursalData}
-                    textField="Text"
+                    dataSource={succursalData}
+                    textField="Name"
                     idField="Id"
-                /> 
+                />
             </ResourcesDirective>
             <Inject services={[Day, Week, WorkWeek, Month, Agenda]} />
         </ScheduleComponent>
