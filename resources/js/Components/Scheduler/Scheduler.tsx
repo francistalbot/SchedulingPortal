@@ -13,7 +13,7 @@ import {
 } from "@syncfusion/ej2-react-schedule";
 import { EventTemplate } from "./EventTemplate";
 import { QuickInfoContentTemplate } from "./QuickInfoContentTemplate";
-import { succursalData, eventsData } from "./datasource";
+import { succursalData } from "./datasource";
 import {
     PopupOpenEventArgs,
     PopupCloseEventArgs,
@@ -21,13 +21,19 @@ import {
     QuickInfoTemplatesModel,
 } from "@syncfusion/ej2-react-schedule";
 import { customizeEditorTemplate } from "./customizeEditorTemplate";
+import { useSelector, useDispatch } from "react-redux";
+import type { RootState, AppDispatch } from "@/app/store";
+
 export default function Scheduler() {
+    const eventsState = useSelector((state: RootState) => state.events);
+    const dispatch = useDispatch<AppDispatch>();
+
     const quickInfoTemplates: QuickInfoTemplatesModel = {
         content: QuickInfoContentTemplate,
     };
 
     const eventSettings: EventSettingsModel = {
-        dataSource: eventsData,
+        dataSource: eventsState.events,
         template: EventTemplate,
     };
 

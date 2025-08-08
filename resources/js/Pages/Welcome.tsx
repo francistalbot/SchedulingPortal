@@ -71,7 +71,9 @@ export default function Welcome({
                         </header>
 
                         <main className="mt-6">
-                            <Scheduler/>
+                            <Provider store={store}>
+                                <Scheduler />
+                            </Provider>
                         </main>
 
                         <footer className="py-16 text-center text-sm text-black dark:text-white/70">
