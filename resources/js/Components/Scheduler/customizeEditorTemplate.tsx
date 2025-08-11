@@ -55,15 +55,15 @@ export const customizeEditorTemplate = (args: PopupOpenEventArgs): void => {
             ComiteDropdown.appendTo(inputEleComiteId);
             inputEleComiteId.setAttribute("name", "ComiteID");
 
-            let containerPosteId: HTMLElement = document.createElement("div");
-            containerPosteId.className = "e-PosteID-container";
-            let inputElePosteId: HTMLInputElement =
+            let containerPosteIds: HTMLElement = document.createElement("div");
+            containerPosteIds.className = "e-PosteIDs-container";
+            let inputElePosteIds: HTMLInputElement =
                 document.createElement("input");
-            inputElePosteId.className = "e-field";
-            inputElePosteId.setAttribute("name", "PosteID");
+            inputElePosteIds.className = "e-field";
+            inputElePosteIds.setAttribute("name", "PosteIDs");
 
-            containerPosteId.appendChild(inputElePosteId);
-            row.appendChild(containerPosteId);
+            containerPosteIds.appendChild(inputElePosteIds);
+            row.appendChild(containerPosteIds);
             let PosteMultiSelect: MultiSelect = new MultiSelect({
                 dataSource: posteData,
                 fields: { text: "Name", value: "Id" },
@@ -75,8 +75,8 @@ export const customizeEditorTemplate = (args: PopupOpenEventArgs): void => {
                 showDropDownIcon: true,
                 allowCustomValue: false, // Permet la saisie de valeurs personnalisées
             });
-            PosteMultiSelect.appendTo(inputElePosteId);
-            inputElePosteId.setAttribute("name", "PosteID"); /* */
+            PosteMultiSelect.appendTo(inputElePosteIds);
+            inputElePosteIds.setAttribute("name", "PosteIDs"); /* */
         }
     }
 };
