@@ -1,25 +1,27 @@
 import { Internationalization } from "@syncfusion/ej2-base";
-import { benevoleData, posteData, affectationData } from "./datasource";
-
+import { benevoleData, posteData } from "./datasource";
+import { useSelector } from "react-redux";
+import { RootState } from "@/app/store";
 // https://ej2.syncfusion.com/react/documentation/api/schedule/#quickinfotemplates
 // https://ej2.syncfusion.com/react/documentation/schedule/how-to/show-quick-info-template?cs-save-lang=1&cs-lang=ts
 export const QuickInfoContentTemplate = (props: {
     [key: string]: any;
 }): JSX.Element => {
+    const assignmentsState = useSelector((state: RootState) => state.assignments);
+
     const intl: Internationalization = new Internationalization();
 
-    const currentAffectations = affectationData.filter(
-        (affectation) =>
-            affectation.ScheduleDataItemID === props.Id &&
-            affectation.Date.getFullYear() ===
+    const currentAssignments = assignmentsState.assignments.filter(
+        (assignment) =>
+            assignment.EventID === props.Id &&
+            assignment.Date.getFullYear() ===
                 new Date(props.StartTime).getFullYear() &&
-            affectation.Date.getMonth() ===
+            assignment.Date.getMonth() ===
                 new Date(props.StartTime).getMonth() &&
-            affectation.Date.getDate() ===
+            assignment.Date.getDate() ===
                 new Date(props.StartTime).getDate() &&
-            props.PosteIDs.includes(affectation.PosteID)
+            props.PosteIDs.includes(assignment.PosteID)
     );
-    //  console.log("currentAffectations", currentAffectations);
 
     const formatDateRange = (data: { [key: string]: string }): string => {
         const startTime = new Date(data.StartTime);
@@ -126,11 +128,11 @@ export const QuickInfoContentTemplate = (props: {
                                                         </strong>
                                                         <select
                                                             defaultValue={
-                                                                currentAffectations.find(
+                                                                currentAssignments.find(
                                                                     (
-                                                                        affectation
+                                                                        assignment
                                                                     ) =>
-                                                                        affectation.PosteID ===
+                                                                        assignment.PosteID ===
                                                                         posteID
                                                                 )?.BenevoleID ||
                                                                 ""
