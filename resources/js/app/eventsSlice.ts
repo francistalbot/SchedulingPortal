@@ -12,7 +12,6 @@ const eventsSlice = createSlice({
                 state.events = action.payload;
         },
         addEvents: (state, action: { payload: Event[] }) => {
-            console.log("addEvent:", action.payload);
             action.payload.forEach(event => {
                 state.events.push(event)
             });

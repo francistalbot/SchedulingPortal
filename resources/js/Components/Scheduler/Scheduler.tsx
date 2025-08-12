@@ -60,18 +60,51 @@ export default function Scheduler() {
             args.cancel = true;
             
             // Dispatch les actions Redux appropriées
-            const events = Array.isArray(args.data) 
-                ? Event.fromArray(args.data) 
-                : [Event.fromAny(args.data)];
             if (args.requestType === 'eventCreate' && args.data) {
+                const events = Array.isArray(args.data) 
+                    ? Event.fromArray(args.data) 
+                    : [Event.fromAny(args.data)];
                     dispatch(addEvents(events));
             } else if (args.requestType === 'eventChange' && args.data) {
                 // dispatch(updateEvent(args.data));
             } else if (args.requestType === 'eventRemove' && args.data) {
-                // dispatch(deleteEvent(args.data));
-            }
+               const dataArray = Array.isArray(args.data)
+                   ? args.data
+                   : [args.data];
+                
+                   // La donnée envoyé sera sois un Event[] 
+                   // si l'événement supprimé est un événement singulier ou toute la récurrence de celui-ci
+                   // ou  {occurence: Event, parent: Event }[] 
+                   // si l'événement supprimé est une occurence d'un événement récurrent
+                const normalEvents: number[] = [];
+                const recurrenceItems: { occurrence: Event; parent: Event }[] = [];
+                
+                dataArray.forEach(item => {
+                    if (item.occurrence && item.parent) {
+                        // Événement récurrent
+                        recurrenceItems.push({
+                            occurrence: item.occurrence,
+                            parent: item.parent
+                        });
+                    } else if (item.Id) {
+                        // Événement normal
+                        normalEvents.push(item.Id);
+                    } else {
+                        console.warn("Structure d'événement inconnue:", item);
+                    }
+                });
+                console.log(normalEvents);
+                // Dispatch les actions appropriées
+                if (normalEvents.length > 0) {
+                    dispatch(removeEvents(normalEvents));
+                }
+                
+                if (recurrenceItems.length > 0) {
+                   // dispatch(removeRecurrenceOccurrences(recurrenceItems));
+                }
         }
     };
+}
 
     return (
         <ScheduleComponent
