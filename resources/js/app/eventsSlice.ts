@@ -14,12 +14,14 @@ const eventsSlice = createSlice({
         addEvents: (state, action: { payload: Event[] }) => {
             action.payload.forEach((event) => {
                 state.events.push(event);
+                console.log("Événements ajouté:", action.payload);
             });
         },
         removeEvents: (state, action: { payload: Event["Id"][] }) => {
             action.payload.forEach((Id) => {
                 state.events = state.events.filter((event) => event.Id !== Id);
             });
+            console.log("Événements supprimés:", action.payload);
         },
         updateEvents: (state, action: { payload: Event[] }) => {
             action.payload.forEach((updatedEvent) => {
@@ -30,6 +32,7 @@ const eventsSlice = createSlice({
                     state.events[index] = updatedEvent;
                 }
             });
+            console.log("Événements modifiés:", action.payload);
         },
     },
 });
