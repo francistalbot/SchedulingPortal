@@ -8,11 +8,38 @@ export class CustomDataManager extends DataManager {
     }
 
     executeQuery(query: any): Promise<any> {
-        const events = store.getState().events.events;
+        const allEvents = store.getState().events.events;
+        let filteredEvents = allEvents;
+
+        // Renvoi les événements seulement dans la plage de date
+        if (query && query.params) {
+            const startDateParam = query.params.find(
+                (p: any) => p.key === "StartDate"
+            );
+            const endDateParam = query.params.find(
+                (p: any) => p.key === "EndDate"
+            );
+            const startDate = new Date(startDateParam.value);
+            const endDate = new Date(endDateParam.value);
+            if (startDate && endDate) {
+                // Filtre les événements dans la plage de dates
+                filteredEvents = allEvents.filter((event) => {
+                    const eventStart = new Date(event.StartTime);
+                    const eventEnd = new Date(event.EndTime);
+
+                    //Renvoi l'événement s'il est récurrent et commence avant la plage
+                    if (event.RecurrenceRule && eventStart < endDate) {
+                        return true;
+                    }
+                    // ou si l'événement se trouve dans la plage
+                    return eventStart < endDate && eventEnd > startDate;
+                });
+            }
+        }
         return new Promise((resolve) => {
             resolve({
-                result: events,
-                count: events.length,
+                result: filteredEvents,
+                count: filteredEvents.length,
             });
         });
     }
