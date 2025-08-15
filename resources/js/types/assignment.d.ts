@@ -1,6 +1,6 @@
 export interface Assignment {
     Id: number;
-    Date: Date;
+    Date: String;
     PosteID: number;
     BenevoleID?: number;
     EventID: number;

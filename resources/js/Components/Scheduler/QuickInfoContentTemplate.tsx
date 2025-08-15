@@ -7,18 +7,20 @@ import { RootState } from "@/app/store";
 export const QuickInfoContentTemplate = (props: {
     [key: string]: any;
 }): JSX.Element => {
-    const assignmentsState = useSelector((state: RootState) => state.assignments);
+    const assignmentsState = useSelector(
+        (state: RootState) => state.assignments
+    );
 
     const intl: Internationalization = new Internationalization();
 
     const currentAssignments = assignmentsState.assignments.filter(
         (assignment) =>
             assignment.EventID === props.Id &&
-            assignment.Date.getFullYear() ===
+            new Date(assignment.Date.toString()).getFullYear() ===
                 new Date(props.StartTime).getFullYear() &&
-            assignment.Date.getMonth() ===
+            new Date(assignment.Date.toString()).getMonth() ===
                 new Date(props.StartTime).getMonth() &&
-            assignment.Date.getDate() ===
+            new Date(assignment.Date.toString()).getDate() ===
                 new Date(props.StartTime).getDate() &&
             props.PosteIDs.includes(assignment.PosteID)
     );
