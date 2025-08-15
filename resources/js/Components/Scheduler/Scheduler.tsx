@@ -14,7 +14,12 @@ import {
 } from "@syncfusion/ej2-react-schedule";
 import { EventTemplate } from "./EventTemplate";
 import { QuickInfoContentTemplate } from "./QuickInfoContentTemplate";
-import { succursalData } from "./datasource";
+import {
+    selectSuccursales,
+    selectPostes,
+    selectComites,
+} from "@/app/selectors";
+import type { Poste, Comite } from "@/types/referenceData"; // Adjust the import path as needed
 import {
     PopupOpenEventArgs,
     PopupCloseEventArgs,
@@ -24,31 +29,32 @@ import {
 import { customizeEditorTemplate } from "./customizeEditorTemplate";
 import { useSelector, useDispatch } from "react-redux";
 import type { RootState, AppDispatch } from "@/app/store";
-import { Event } from "@/types/event";
 import { CustomDataManager } from "./customDataManager";
+import { OptimizedQuickInfoContentTemplate } from "./OptimizedQuickInfoContentTemplate";
+import { QuickInfoWrapper } from "./QuickInfoWrapper";
 
 export default function Scheduler() {
-    const eventsState = useSelector((state: RootState) => state.events);
-    const dispatch = useDispatch<AppDispatch>();
+    const state = useSelector((state: RootState) => state);
 
     const quickInfoTemplates: QuickInfoTemplatesModel = {
-        content: QuickInfoContentTemplate,
+        content: QuickInfoWrapper,
     };
-    const customDataManager = new CustomDataManager();
 
     const eventSettings: EventSettingsModel = {
-        dataSource: customDataManager,
+        dataSource: new CustomDataManager(),
         template: EventTemplate,
     };
 
     const onPopupOpen = (args: PopupOpenEventArgs) => {
-        customizeEditorTemplate(args);
+        const enrichedArgs = {
+            ...args,
+            postes: selectPostes(state),
+            comites: selectComites(state),
+        };
+        customizeEditorTemplate(enrichedArgs);
     };
 
-    const onPopupClose = (args: PopupCloseEventArgs) => {
-        if (args.type === "Editor") {
-        }
-    };
+    const onPopupClose = (args: PopupCloseEventArgs) => {};
 
     return (
         <ScheduleComponent
@@ -65,12 +71,6 @@ export default function Scheduler() {
             selectedDate={new Date(2018, 5, 1)}
             popupOpen={onPopupOpen}
             popupClose={onPopupClose}
-            //  actionBegin={onActionBegin}
-            //   actionComplete={onActionComplete}
-            /*    dataBinding={(args) => {
-                console.log("Data binding:", args);
-            }}*/
-            //enableRecurrenceValidation={true}
         >
             <ViewsDirective>
                 <ViewDirective option="Day" />
@@ -84,7 +84,7 @@ export default function Scheduler() {
                     title="Succursal"
                     name="Succursals"
                     allowMultiple={false}
-                    dataSource={succursalData}
+                    dataSource={selectSuccursales(state)}
                     textField="Name"
                     idField="Id"
                 />

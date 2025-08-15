@@ -1,10 +1,21 @@
-import { PopupOpenEventArgs } from "@syncfusion/ej2-react-schedule";
+import { PopupOpenEventArgs, select } from "@syncfusion/ej2-react-schedule";
 import { DropDownList, MultiSelect } from "@syncfusion/ej2-dropdowns";
-import { comiteData, posteData } from "./datasource";
+import { useSelector } from "react-redux";
+import { RootState } from "@/app/store";
+import { selectComites } from "@/app/selectors";
 
-export const customizeEditorTemplate = (args: PopupOpenEventArgs): void => {
+interface EnrichedArgs extends PopupOpenEventArgs {
+    postes: any[];
+    comites: any[];
+}
+
+export const customizeEditorTemplate = (args: EnrichedArgs): void => {
+    const state = useSelector((state: RootState) => state);
+    const comiteData = selectComites(state);
     console.log(args);
     if (args.type !== "Editor") return;
+
+    // Move SuccursalID container to the Location container
     if (args.element.querySelector(".e-resources-row")) {
         const succursalIdContainer = args.element.querySelector(
             ".e-SuccursalID-container "
@@ -21,6 +32,8 @@ export const customizeEditorTemplate = (args: PopupOpenEventArgs): void => {
             }
         }
     }
+
+    // Create Comite and Poste dropdowns
     if (!args.element.querySelector(".custom-field-row")) {
         let row: HTMLElement = document.createElement("div");
         row.className = "custom-field-row";
@@ -41,12 +54,11 @@ export const customizeEditorTemplate = (args: PopupOpenEventArgs): void => {
             let inputEleComiteId: HTMLInputElement =
                 document.createElement("input");
             inputEleComiteId.className = "e-field";
-            inputEleComiteId.setAttribute("name", "ComiteID");
-
+            inputEleComiteId.setAttribute("name", "CID");
             containerComiteId.appendChild(inputEleComiteId);
             row.appendChild(containerComiteId);
             let ComiteDropdown: DropDownList = new DropDownList({
-                dataSource: comiteData,
+                dataSource: args.comites,
                 fields: { text: "Name", value: "Id" },
                 placeholder: "Choose Comite",
                 floatLabelType: "Always",
@@ -60,12 +72,11 @@ export const customizeEditorTemplate = (args: PopupOpenEventArgs): void => {
             let inputElePosteIds: HTMLInputElement =
                 document.createElement("input");
             inputElePosteIds.className = "e-field";
-            inputElePosteIds.setAttribute("name", "PosteIDs");
-
+            inputElePosteIds.setAttribute("name", "PIDs");
             containerPosteIds.appendChild(inputElePosteIds);
             row.appendChild(containerPosteIds);
             let PosteMultiSelect: MultiSelect = new MultiSelect({
-                dataSource: posteData,
+                dataSource: args.postes,
                 fields: { text: "Name", value: "Id" },
                 placeholder: "Choose Postes",
                 floatLabelType: "Always",
