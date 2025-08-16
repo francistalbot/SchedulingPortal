@@ -10,16 +10,11 @@ import {
     ViewDirective,
     ResourcesDirective,
     ResourceDirective,
-    ActionEventArgs,
 } from "@syncfusion/ej2-react-schedule";
 import { EventTemplate } from "./EventTemplate";
 import { QuickInfoContentTemplate } from "./QuickInfoContentTemplate";
-import {
-    selectSuccursales,
-    selectPostes,
-    selectComites,
-} from "@/app/selectors";
-import type { Poste, Comite } from "@/types/referenceData"; // Adjust the import path as needed
+import { enrichEditorArgs, enrichQuickInfoProps } from "./enrichPopupArgs";
+import { selectSuccursales } from "@/app/selectors";
 import {
     PopupOpenEventArgs,
     PopupCloseEventArgs,
@@ -27,17 +22,19 @@ import {
     QuickInfoTemplatesModel,
 } from "@syncfusion/ej2-react-schedule";
 import { customizeEditorTemplate } from "./customizeEditorTemplate";
-import { useSelector, useDispatch } from "react-redux";
-import type { RootState, AppDispatch } from "@/app/store";
+import { useSelector } from "react-redux";
+import type { RootState } from "@/app/store";
 import { CustomDataManager } from "./customDataManager";
-import { OptimizedQuickInfoContentTemplate } from "./OptimizedQuickInfoContentTemplate";
-import { QuickInfoWrapper } from "./QuickInfoWrapper";
 
 export default function Scheduler() {
     const state = useSelector((state: RootState) => state);
 
     const quickInfoTemplates: QuickInfoTemplatesModel = {
-        content: QuickInfoWrapper,
+        content: (props: any) => {
+            // Enrichir les props avec les données de référence
+            const enrichedProps = enrichQuickInfoProps(props, state);
+            return QuickInfoContentTemplate(enrichedProps);
+        },
     };
 
     const eventSettings: EventSettingsModel = {
@@ -46,12 +43,10 @@ export default function Scheduler() {
     };
 
     const onPopupOpen = (args: PopupOpenEventArgs) => {
-        const enrichedArgs = {
-            ...args,
-            postes: selectPostes(state),
-            comites: selectComites(state),
-        };
-        customizeEditorTemplate(enrichedArgs);
+        if (args.type == "Editor") {
+            const enrichedArgs = enrichEditorArgs(args, state);
+            customizeEditorTemplate(enrichedArgs);
+        }
     };
 
     const onPopupClose = (args: PopupCloseEventArgs) => {};

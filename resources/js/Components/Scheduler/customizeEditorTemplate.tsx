@@ -1,20 +1,7 @@
-import { PopupOpenEventArgs, select } from "@syncfusion/ej2-react-schedule";
 import { DropDownList, MultiSelect } from "@syncfusion/ej2-dropdowns";
-import { useSelector } from "react-redux";
-import { RootState } from "@/app/store";
-import { selectComites } from "@/app/selectors";
+import { EnrichedEditorArgs } from "./enrichPopupArgs";
 
-interface EnrichedArgs extends PopupOpenEventArgs {
-    postes: any[];
-    comites: any[];
-}
-
-export const customizeEditorTemplate = (args: EnrichedArgs): void => {
-    const state = useSelector((state: RootState) => state);
-    const comiteData = selectComites(state);
-    console.log(args);
-    if (args.type !== "Editor") return;
-
+export const customizeEditorTemplate = (args: EnrichedEditorArgs): void => {
     // Move SuccursalID container to the Location container
     if (args.element.querySelector(".e-resources-row")) {
         const succursalIdContainer = args.element.querySelector(
@@ -49,6 +36,8 @@ export const customizeEditorTemplate = (args: EnrichedArgs): void => {
                 row,
                 (formElement.firstChild as HTMLElement).firstChild
             );
+
+            // Comité dropdown
             let containerComiteId: HTMLElement = document.createElement("div");
             containerComiteId.className = "e-ComiteID-container";
             let inputEleComiteId: HTMLInputElement =
@@ -58,15 +47,16 @@ export const customizeEditorTemplate = (args: EnrichedArgs): void => {
             containerComiteId.appendChild(inputEleComiteId);
             row.appendChild(containerComiteId);
             let ComiteDropdown: DropDownList = new DropDownList({
-                dataSource: args.comites,
+                dataSource: args.comites as any,
                 fields: { text: "Name", value: "Id" },
                 placeholder: "Choose Comite",
                 floatLabelType: "Always",
-                value: (args.data?.ComiteID ?? null) as string,
+                value: args.data?.ComiteID ?? null,
             });
             ComiteDropdown.appendTo(inputEleComiteId);
             inputEleComiteId.setAttribute("name", "ComiteID");
 
+            // Postes multi-select
             let containerPosteIds: HTMLElement = document.createElement("div");
             containerPosteIds.className = "e-PosteIDs-container";
             let inputElePosteIds: HTMLInputElement =
@@ -76,18 +66,18 @@ export const customizeEditorTemplate = (args: EnrichedArgs): void => {
             containerPosteIds.appendChild(inputElePosteIds);
             row.appendChild(containerPosteIds);
             let PosteMultiSelect: MultiSelect = new MultiSelect({
-                dataSource: args.postes,
+                dataSource: args.postes as any,
                 fields: { text: "Name", value: "Id" },
                 placeholder: "Choose Postes",
                 floatLabelType: "Always",
-                mode: "Box", // Affiche les sélections sous forme de chips/tags
-                value: args.data?.PosteIDs ?? [], // Utilise un tableau pour les valeurs multiples
+                mode: "Box",
+                value: args.data?.PosteIDs ?? [],
                 showClearButton: true,
                 showDropDownIcon: true,
-                allowCustomValue: false, // Permet la saisie de valeurs personnalisées
+                allowCustomValue: false,
             });
             PosteMultiSelect.appendTo(inputElePosteIds);
-            inputElePosteIds.setAttribute("name", "PosteIDs"); /* */
+            inputElePosteIds.setAttribute("name", "PosteIDs");
         }
     }
 };

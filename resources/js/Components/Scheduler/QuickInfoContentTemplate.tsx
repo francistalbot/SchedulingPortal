@@ -1,14 +1,22 @@
 import { Internationalization } from "@syncfusion/ej2-base";
-import { benevoleData, posteData } from "./datasource";
 import { useSelector } from "react-redux";
 import { RootState } from "@/app/store";
+import { Poste } from "@/types/referenceData";
+
 // https://ej2.syncfusion.com/react/documentation/api/schedule/#quickinfotemplates
 // https://ej2.syncfusion.com/react/documentation/schedule/how-to/show-quick-info-template?cs-save-lang=1&cs-lang=ts
 export const QuickInfoContentTemplate = (props: {
     [key: string]: any;
 }): JSX.Element => {
+    console.log("props:", props);
     const assignmentsState = useSelector(
         (state: RootState) => state.assignments
+    );
+    const comiteData = props.comite;
+    const succursalData = props.succursal;
+    const postesData = props.eventPostes as Poste[];
+    const benevoleData = useSelector(
+        (state: RootState) => state.referenceData.benevoles
     );
 
     const intl: Internationalization = new Internationalization();
@@ -121,7 +129,7 @@ export const QuickInfoContentTemplate = (props: {
                                                     <li key={posteID}>
                                                         <strong>
                                                             {posteID
-                                                                ? posteData.find(
+                                                                ? postesData.find(
                                                                       (p) =>
                                                                           p.Id ===
                                                                           posteID
