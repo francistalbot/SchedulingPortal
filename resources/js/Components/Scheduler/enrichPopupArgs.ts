@@ -4,8 +4,11 @@ import {
     selectSuccursales,
     selectPostes,
     selectComites,
+    selectAssignments,
+    selectBenevoles,
 } from "@/app/selectors";
 import type { Event } from "@/types/event";
+import type { Assignment } from "@/types/assignment";
 import type { Comite, Poste, Succursale } from "@/types/referenceData";
 
 // Interface pour les arguments enrichis de l'Editor
@@ -45,6 +48,8 @@ export const enrichQuickInfoProps = (
     const comites = selectComites(state);
     const postes = selectPostes(state);
     const succursales = selectSuccursales(state);
+    const assignments = selectAssignments(state);
+    const benevoles = selectBenevoles(state);
 
     // Trouver les entités spécifiques à l'événement
     const comite = eventData.ComiteID
@@ -56,10 +61,24 @@ export const enrichQuickInfoProps = (
     const eventPostes = eventData.PosteIDs
         ? postes.filter((p) => eventData.PosteIDs!.includes(p.Id))
         : [];
+    const comiteBenevoles = benevoles.filter((b) => b.ComiteId === comite?.Id);
+    const currentAssignments = assignments.filter(
+        (assignment) =>
+            assignment.EventID === props.Id &&
+            new Date(assignment.Date.toString()).getFullYear() ===
+                new Date(props.StartTime).getFullYear() &&
+            new Date(assignment.Date.toString()).getMonth() ===
+                new Date(props.StartTime).getMonth() &&
+            new Date(assignment.Date.toString()).getDate() ===
+                new Date(props.StartTime).getDate() &&
+            props.PosteIDs.includes(assignment.PosteID)
+    );
     return {
         ...props,
         comite,
         succursale,
         eventPostes,
+        comiteBenevoles,
+        currentAssignments,
     };
 };

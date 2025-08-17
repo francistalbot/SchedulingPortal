@@ -1,7 +1,8 @@
 import { Internationalization } from "@syncfusion/ej2-base";
 import { useSelector } from "react-redux";
 import { RootState } from "@/app/store";
-import { Poste } from "@/types/referenceData";
+import { Benevole, Poste } from "@/types/referenceData";
+import { Assignment } from "@/types/assignment";
 
 // https://ej2.syncfusion.com/react/documentation/api/schedule/#quickinfotemplates
 // https://ej2.syncfusion.com/react/documentation/schedule/how-to/show-quick-info-template?cs-save-lang=1&cs-lang=ts
@@ -15,23 +16,10 @@ export const QuickInfoContentTemplate = (props: {
     const comiteData = props.comite;
     const succursalData = props.succursal;
     const postesData = props.eventPostes as Poste[];
-    const benevoleData = useSelector(
-        (state: RootState) => state.referenceData.benevoles
-    );
+    const benevoleData = props.comiteBenevole as Benevole[];
+    const assignmentsData = props.currentAssignments as Assignment[];
 
     const intl: Internationalization = new Internationalization();
-
-    const currentAssignments = assignmentsState.assignments.filter(
-        (assignment) =>
-            assignment.EventID === props.Id &&
-            new Date(assignment.Date.toString()).getFullYear() ===
-                new Date(props.StartTime).getFullYear() &&
-            new Date(assignment.Date.toString()).getMonth() ===
-                new Date(props.StartTime).getMonth() &&
-            new Date(assignment.Date.toString()).getDate() ===
-                new Date(props.StartTime).getDate() &&
-            props.PosteIDs.includes(assignment.PosteID)
-    );
 
     const formatDateRange = (data: { [key: string]: string }): string => {
         const startTime = new Date(data.StartTime);
@@ -138,7 +126,7 @@ export const QuickInfoContentTemplate = (props: {
                                                         </strong>
                                                         <select
                                                             defaultValue={
-                                                                currentAssignments.find(
+                                                                assignmentsData.find(
                                                                     (
                                                                         assignment
                                                                     ) =>
