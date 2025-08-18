@@ -12,9 +12,10 @@ import {
     ResourceDirective,
 } from "@syncfusion/ej2-react-schedule";
 import { EventTemplate } from "./EventTemplate";
-import { QuickInfoContentTemplate } from "./QuickInfoContentTemplate";
-import { enrichEditorArgs, enrichQuickInfoProps } from "./enrichPopupArgs";
-import { selectSuccursales } from "@/app/selectors";
+import {
+    QuickInfoContentTemplate,
+    enrichQuickInfoProps,
+} from "./QuickInfoContentTemplate";
 import {
     PopupOpenEventArgs,
     PopupCloseEventArgs,
@@ -27,12 +28,20 @@ import type { RootState } from "@/app/store";
 import { CustomDataManager } from "./customDataManager";
 
 export default function Scheduler() {
-    const state = useSelector((state: RootState) => state);
+    // Sélectionner seulement les données spécifiques nécessaires
+    const referenceData = useSelector(
+        (state: RootState) => state.referenceData
+    );
+    const assignments = useSelector((state: RootState) => state.assignments);
 
     const quickInfoTemplates: QuickInfoTemplatesModel = {
         content: (props: any) => {
             // Enrichir les props avec les données de référence
-            const enrichedProps = enrichQuickInfoProps(props, state);
+            const enrichedProps = enrichQuickInfoProps(
+                props,
+                referenceData,
+                assignments.assignments
+            );
             return QuickInfoContentTemplate(enrichedProps);
         },
     };
@@ -44,7 +53,11 @@ export default function Scheduler() {
 
     const onPopupOpen = (args: PopupOpenEventArgs) => {
         if (args.type == "Editor") {
-            const enrichedArgs = enrichEditorArgs(args, state);
+            const enrichedArgs = {
+                ...args,
+                comites: referenceData.comites,
+                postes: referenceData.postes,
+            };
             customizeEditorTemplate(enrichedArgs);
         }
     };
@@ -79,7 +92,7 @@ export default function Scheduler() {
                     title="Succursal"
                     name="Succursals"
                     allowMultiple={false}
-                    dataSource={selectSuccursales(state)}
+                    dataSource={referenceData.succursales}
                     textField="Name"
                     idField="Id"
                 />

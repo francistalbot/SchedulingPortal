@@ -1,5 +1,11 @@
 import { DropDownList, MultiSelect } from "@syncfusion/ej2-dropdowns";
-import { EnrichedEditorArgs } from "./enrichPopupArgs";
+import { PopupOpenEventArgs } from "@syncfusion/ej2-react-schedule";
+import { Comite, Poste } from "@/types/referenceData";
+
+export interface EnrichedEditorArgs extends PopupOpenEventArgs {
+    comites: Comite[];
+    postes: Poste[];
+}
 
 export const customizeEditorTemplate = (args: EnrichedEditorArgs): void => {
     // Move SuccursalID container to the Location container

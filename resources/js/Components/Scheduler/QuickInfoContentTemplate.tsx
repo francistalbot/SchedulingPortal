@@ -1,8 +1,16 @@
 import { Internationalization } from "@syncfusion/ej2-base";
 import { useSelector } from "react-redux";
 import { RootState } from "@/app/store";
-import { Benevole, Poste } from "@/types/referenceData";
+import {
+    Benevole,
+    Comite,
+    Poste,
+    ReferenceDataState,
+    Succursale,
+} from "@/types/referenceData";
 import { Assignment } from "@/types/assignment";
+import { Event } from "@/types/event";
+import { DropDownListComponent } from "@syncfusion/ej2-react-dropdowns";
 
 // https://ej2.syncfusion.com/react/documentation/api/schedule/#quickinfotemplates
 // https://ej2.syncfusion.com/react/documentation/schedule/how-to/show-quick-info-template?cs-save-lang=1&cs-lang=ts
@@ -16,7 +24,7 @@ export const QuickInfoContentTemplate = (props: {
     const comiteData = props.comite;
     const succursalData = props.succursal;
     const postesData = props.eventPostes as Poste[];
-    const benevoleData = props.comiteBenevole as Benevole[];
+    const benevoleData = (props.comiteBenevoles as Benevole[]) || [];
     const assignmentsData = props.currentAssignments as Assignment[];
 
     const intl: Internationalization = new Internationalization();
@@ -50,7 +58,31 @@ export const QuickInfoContentTemplate = (props: {
             return `${startDate} (${startHour}) - ${endDate} (${endHour})`;
         }
     };
-    //  console.log(props);
+
+    const PosteAssignement = (props: { posteID: number }): JSX.Element => {
+        const posteID = props.posteID;
+        return (
+            <DropDownListComponent
+                dataSource={benevoleData.map((b) => ({
+                    text: b.Name,
+                    value: b.Id,
+                }))}
+                fields={{ text: "text", value: "value" }}
+                placeholder={
+                    posteID
+                        ? postesData.find((p) => p.Id === posteID)?.Name
+                        : ""
+                }
+                value={
+                    assignmentsData.find(
+                        (assignment) => assignment.PosteID === posteID
+                    )?.BenevoleID || ""
+                }
+                floatLabelType="Always"
+            />
+        );
+    };
+
     return (
         <div>
             {props.elementType === "cell" ? (
@@ -111,67 +143,11 @@ export const QuickInfoContentTemplate = (props: {
                                 props.PosteIDs.length > 0 && (
                                     <div className="postes-section">
                                         <h4>Postes à pourvoir</h4>
-                                        <ul>
-                                            {props.PosteIDs.map(
-                                                (posteID: any) => (
-                                                    <li key={posteID}>
-                                                        <strong>
-                                                            {posteID
-                                                                ? postesData.find(
-                                                                      (p) =>
-                                                                          p.Id ===
-                                                                          posteID
-                                                                  )?.Name
-                                                                : ""}
-                                                        </strong>
-                                                        <select
-                                                            defaultValue={
-                                                                assignmentsData.find(
-                                                                    (
-                                                                        assignment
-                                                                    ) =>
-                                                                        assignment.PosteID ===
-                                                                        posteID
-                                                                )?.BenevoleID ||
-                                                                ""
-                                                            }
-                                                            // TODO: Ajoute ici un gestionnaire pour sauvegarder l'affectation
-                                                        >
-                                                            <option value="">
-                                                                -- Choisir un
-                                                                bénévole --
-                                                            </option>
-                                                            {benevoleData
-                                                                .filter(
-                                                                    (
-                                                                        benevole
-                                                                    ) =>
-                                                                        benevole.ComiteId ===
-                                                                        props.ComiteID
-                                                                )
-                                                                .map(
-                                                                    (
-                                                                        benevole
-                                                                    ) => (
-                                                                        <option
-                                                                            key={
-                                                                                benevole.Id
-                                                                            }
-                                                                            value={
-                                                                                benevole.Id
-                                                                            }
-                                                                        >
-                                                                            {
-                                                                                benevole.Name
-                                                                            }
-                                                                        </option>
-                                                                    )
-                                                                )}
-                                                        </select>
-                                                    </li>
-                                                )
-                                            )}
-                                        </ul>
+                                        {props.PosteIDs.map((posteID: any) => (
+                                            <PosteAssignement
+                                                posteID={posteID}
+                                            />
+                                        ))}
                                     </div>
                                 )}
                         </div>
@@ -180,4 +156,50 @@ export const QuickInfoContentTemplate = (props: {
             )}
         </div>
     );
+};
+
+export const enrichQuickInfoProps = (
+    props: { [key: string]: any },
+    referenceData: ReferenceDataState,
+    assignments: Assignment[]
+) => {
+    if (props.elementType == "cell") return props;
+    const eventData = props as Event;
+
+    // Trouver les entités spécifiques à l'événement
+    const comite = eventData.ComiteID
+        ? referenceData.comites.find((c: Comite) => c.Id === eventData.ComiteID)
+        : undefined;
+    const succursale = eventData.SuccursalID
+        ? referenceData.succursales.find(
+              (s: Succursale) => s.Id === eventData.SuccursalID
+          )
+        : undefined;
+    const eventPostes = eventData.PosteIDs
+        ? referenceData.postes.filter((p: Poste) =>
+              eventData.PosteIDs!.includes(p.Id)
+          )
+        : [];
+    const comiteBenevoles = referenceData.benevoles.filter(
+        (b: Benevole) => b.ComiteId === comite?.Id
+    );
+    const currentAssignments = assignments.filter(
+        (assignment: Assignment) =>
+            assignment.EventID === props.Id &&
+            new Date(assignment.Date.toString()).getFullYear() ===
+                new Date(props.StartTime).getFullYear() &&
+            new Date(assignment.Date.toString()).getMonth() ===
+                new Date(props.StartTime).getMonth() &&
+            new Date(assignment.Date.toString()).getDate() ===
+                new Date(props.StartTime).getDate() &&
+            props.PosteIDs.includes(assignment.PosteID)
+    );
+    return {
+        ...props,
+        comite,
+        succursale,
+        eventPostes,
+        comiteBenevoles,
+        currentAssignments,
+    };
 };
