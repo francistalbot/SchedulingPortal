@@ -1,8 +1,6 @@
 import {
     ScheduleComponent,
-    Day,
     Week,
-    WorkWeek,
     Month,
     Agenda,
     Inject,
@@ -79,12 +77,13 @@ export default function Scheduler() {
             selectedDate={new Date(2018, 5, 1)}
             popupOpen={onPopupOpen}
             popupClose={onPopupClose}
+            rowAutoHeight={true}
+            timeScale={{ enable: false }}
         >
             <ViewsDirective>
-                <ViewDirective option="Day" />
                 <ViewDirective option="Week" />
-                <ViewDirective option="WorkWeek" />
                 <ViewDirective option="Month" />
+                <ViewDirective option="Agenda" />
             </ViewsDirective>
             <ResourcesDirective>
                 <ResourceDirective
@@ -97,7 +96,7 @@ export default function Scheduler() {
                     idField="Id"
                 />
             </ResourcesDirective>
-            <Inject services={[Day, Week, WorkWeek, Month, Agenda]} />
+            <Inject services={[Week, Month, Agenda]} />
         </ScheduleComponent>
     );
 }
