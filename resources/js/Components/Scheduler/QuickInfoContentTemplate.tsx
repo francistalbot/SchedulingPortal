@@ -18,9 +18,6 @@ export const QuickInfoContentTemplate = (props: {
     [key: string]: any;
 }): JSX.Element => {
     console.log("props:", props);
-    const assignmentsState = useSelector(
-        (state: RootState) => state.assignments
-    );
     const comiteData = props.comite;
     const succursalData = props.succursal;
     const postesData = props.eventPostes as Poste[];
@@ -57,30 +54,6 @@ export const QuickInfoContentTemplate = (props: {
                 return `${startDate} (${startHour} - ${endHour})`;
             return `${startDate} (${startHour}) - ${endDate} (${endHour})`;
         }
-    };
-
-    const PosteAssignement = (props: { posteID: number }): JSX.Element => {
-        const posteID = props.posteID;
-        return (
-            <DropDownListComponent
-                dataSource={benevoleData.map((b) => ({
-                    text: b.Name,
-                    value: b.Id,
-                }))}
-                fields={{ text: "text", value: "value" }}
-                placeholder={
-                    posteID
-                        ? postesData.find((p) => p.Id === posteID)?.Name
-                        : ""
-                }
-                value={
-                    assignmentsData.find(
-                        (assignment) => assignment.PosteID === posteID
-                    )?.BenevoleID || ""
-                }
-                floatLabelType="Always"
-            />
-        );
     };
 
     return (
@@ -144,9 +117,34 @@ export const QuickInfoContentTemplate = (props: {
                                     <div className="postes-section">
                                         <h4>Postes à pourvoir</h4>
                                         {props.PosteIDs.map((posteID: any) => (
-                                            <PosteAssignement
-                                                key={posteID}
-                                                posteID={posteID}
+                                            <DropDownListComponent
+                                                dataSource={benevoleData.map(
+                                                    (b) => ({
+                                                        text: b.Name,
+                                                        value: b.Id,
+                                                    })
+                                                )}
+                                                fields={{
+                                                    text: "text",
+                                                    value: "value",
+                                                }}
+                                                placeholder={
+                                                    posteID
+                                                        ? postesData.find(
+                                                              (p) =>
+                                                                  p.Id ===
+                                                                  posteID
+                                                          )?.Name
+                                                        : ""
+                                                }
+                                                value={
+                                                    assignmentsData.find(
+                                                        (assignment) =>
+                                                            assignment.PosteID ===
+                                                            posteID
+                                                    )?.BenevoleID || ""
+                                                }
+                                                floatLabelType="Always"
                                             />
                                         ))}
                                     </div>
