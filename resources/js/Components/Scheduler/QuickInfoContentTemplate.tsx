@@ -139,15 +139,18 @@ export const QuickInfoContentTemplate = (props: {
                                 ""
                             )}
                             {/* Affichage des postes à pourvoir */}
-                            <div className="postes-section">
-                                <h4>Postes à pourvoir</h4>
-                                {props.PosteIDs.map((posteID: any) => (
-                                    <PosteAssignement
-                                        key={posteID}
-                                        posteID={posteID}
-                                    />
-                                ))}
-                            </div>
+                            {props.PosteIDs !== undefined &&
+                                props.PosteIDs.length > 0 && (
+                                    <div className="postes-section">
+                                        <h4>Postes à pourvoir</h4>
+                                        {props.PosteIDs.map((posteID: any) => (
+                                            <PosteAssignement
+                                                key={posteID}
+                                                posteID={posteID}
+                                            />
+                                        ))}
+                                    </div>
+                                )}
                         </div>
                     </div>
                 </>
