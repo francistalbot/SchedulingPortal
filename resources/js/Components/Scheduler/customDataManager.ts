@@ -1,13 +1,26 @@
 import { addEvents, removeEvents, updateEvents } from "@/app/eventsSlice";
 import { DataManager, Query } from "@syncfusion/ej2-data";
 import { store } from "@/app/store";
+import { ReferenceDataState } from "@/types/referenceData";
+import { Assignment } from "@/types/assignment";
+import { addAssignments, removeAssignments } from "@/app/assignmentsSlice";
 export class CustomDataManager extends DataManager {
+    private static instance: CustomDataManager;
     private dispatch = store.dispatch;
+
     constructor() {
         super();
     }
 
+    public static getInstance(): CustomDataManager {
+        if (!CustomDataManager.instance) {
+            CustomDataManager.instance = new CustomDataManager();
+        }
+        return CustomDataManager.instance;
+    }
+
     executeQuery(query: any): Promise<any> {
+        console.log("executeQuery called with:", query);
         const allEvents = store.getState().events.events;
         let filteredEvents = allEvents;
 
@@ -46,6 +59,15 @@ export class CustomDataManager extends DataManager {
 
     // Force l'override de ces méthodes
     saveChanges(changes: any, key?: string, tableName?: string): Promise<any> {
+        console.log("saveChanges called with:", changes, key, tableName);
+
+        if (tableName === "assignments") {
+            return this.saveAssignmentChanges(changes);
+        } else {
+            return this.saveEventChanges(changes);
+        }
+    }
+    private saveEventChanges(changes: any): Promise<any> {
         if (changes.addedRecords && changes.addedRecords.length > 0) {
             changes.addedRecords.forEach((record: any) => {
                 const newEvent = {
@@ -72,5 +94,34 @@ export class CustomDataManager extends DataManager {
             });
         }
         return Promise.resolve(changes);
+    }
+    private saveAssignmentChanges(changes: any): Promise<any> {
+        if (changes.addedRecords && changes.addedRecords.length > 0) {
+            this.dispatch(addAssignments(changes.addedRecords));
+        }
+        if (changes.changedRecords && changes.changedRecords.length > 0) {
+            //this.dispatch(updateAssignments(changes.changedRecords));
+        }
+        if (changes.deletedRecords && changes.deletedRecords.length > 0) {
+            const idsToDelete = changes.deletedRecords.map(
+                (record: any) => record.Id
+            );
+            this.dispatch(removeAssignments(idsToDelete));
+        }
+        return Promise.resolve(changes);
+    }
+
+    getReferenceData(): ReferenceDataState {
+        return store.getState().referenceData;
+    }
+
+    getAssignments(): Assignment[] {
+        return store.getState().assignments.assignments;
+    }
+
+    getAssignmentsByEventId(eventId: string | number): Assignment[] {
+        return this.getAssignments().filter(
+            (assignment) => assignment.EventID === eventId
+        );
     }
 }

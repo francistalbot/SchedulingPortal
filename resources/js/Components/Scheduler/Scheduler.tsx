@@ -1,7 +1,9 @@
 import {
     ScheduleComponent,
     Week,
+    TimelineViews,
     Month,
+    TimelineMonth,
     Agenda,
     Inject,
     ViewsDirective,
@@ -9,7 +11,6 @@ import {
     ResourcesDirective,
     ResourceDirective,
 } from "@syncfusion/ej2-react-schedule";
-import { EventTemplate } from "./EventTemplate";
 import {
     QuickInfoContentTemplate,
     enrichQuickInfoProps,
@@ -21,16 +22,15 @@ import {
     QuickInfoTemplatesModel,
 } from "@syncfusion/ej2-react-schedule";
 import { customizeEditorTemplate } from "./customizeEditorTemplate";
-import { useSelector } from "react-redux";
-import type { RootState } from "@/app/store";
 import { CustomDataManager } from "./customDataManager";
+import { AgendaEventTemplate, EventTemplate } from "./EventTemplate";
 
 export default function Scheduler() {
     // Sélectionner seulement les données spécifiques nécessaires
-    const referenceData = useSelector(
-        (state: RootState) => state.referenceData
-    );
-    const assignments = useSelector((state: RootState) => state.assignments);
+    const dataManager = CustomDataManager.getInstance();
+
+    const referenceData = dataManager.getReferenceData();
+    const assignments = dataManager.getAssignments();
 
     const quickInfoTemplates: QuickInfoTemplatesModel = {
         content: (props: any) => {
@@ -38,15 +38,14 @@ export default function Scheduler() {
             const enrichedProps = enrichQuickInfoProps(
                 props,
                 referenceData,
-                assignments.assignments
+                assignments
             );
             return QuickInfoContentTemplate(enrichedProps);
         },
     };
 
     const eventSettings: EventSettingsModel = {
-        dataSource: new CustomDataManager(),
-        template: EventTemplate,
+        dataSource: dataManager,
     };
 
     const onPopupOpen = (args: PopupOpenEventArgs) => {
@@ -59,31 +58,49 @@ export default function Scheduler() {
             customizeEditorTemplate(enrichedArgs);
         }
     };
-
     const onPopupClose = (args: PopupCloseEventArgs) => {};
+
+    const agendaEventTemplate = (props: any) => {
+        const enrichedProps = enrichQuickInfoProps(
+            props,
+            referenceData,
+            assignments
+        );
+        return AgendaEventTemplate(enrichedProps);
+    };
 
     return (
         <ScheduleComponent
             width="100%"
             height="650px"
             eventSettings={eventSettings}
-            group={{
-                byGroupID: false,
-                resources: ["Succursals"],
-            }}
-            enableAdaptiveUI={true}
+            enableAdaptiveUI={false}
             quickInfoTemplates={quickInfoTemplates}
             currentView="Month"
             selectedDate={new Date(2018, 5, 1)}
             popupOpen={onPopupOpen}
             popupClose={onPopupClose}
             rowAutoHeight={true}
-            timeScale={{ enable: false }}
         >
             <ViewsDirective>
+                <ViewDirective
+                    option="TimelineWeek"
+                    timeScale={{ enable: false }}
+                    group={{
+                        byGroupID: true,
+                        allowGroupEdit: true,
+                        resources: ["Succursals", "Comités"],
+                        idGroup: "ComiteId",
+                    }}
+                />
                 <ViewDirective option="Week" />
                 <ViewDirective option="Month" />
-                <ViewDirective option="Agenda" />
+                <ViewDirective option="TimelineMonth" />
+
+                <ViewDirective
+                    option="Agenda"
+                    eventTemplate={agendaEventTemplate}
+                />
             </ViewsDirective>
             <ResourcesDirective>
                 <ResourceDirective
@@ -95,8 +112,20 @@ export default function Scheduler() {
                     textField="Name"
                     idField="Id"
                 />
+                <ResourceDirective
+                    field="ComiteID"
+                    title="Comité"
+                    name="Comités"
+                    allowMultiple={false}
+                    dataSource={referenceData.comites}
+                    groupIDField="SuccursalId"
+                    textField="Name"
+                    idField="Id"
+                />
             </ResourcesDirective>
-            <Inject services={[Week, Month, Agenda]} />
+            <Inject
+                services={[Week, TimelineViews, Month, TimelineMonth, Agenda]}
+            />
         </ScheduleComponent>
     );
 }
