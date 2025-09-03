@@ -91,6 +91,44 @@ export const QuickInfoContentTemplate = (props: {
             return `${startDate} (${startHour}) - ${endDate} (${endHour})`;
         }
     };
+    const handleAssignmentChange = async (
+        posteID: number,
+        benevoleID: number,
+        assignmentID: number | undefined
+    ) => {
+        try {
+            // Trouver l'assignement actuel pour ce poste
+            const currentAssignment = assignmentsData.find(
+                (assignment) => assignment.PosteID === posteID
+            );
+            // Vérifier si la valeur a vraiment changé
+            if (currentAssignment?.BenevoleID === benevoleID) return;
+
+            const assignment = {
+                Id: assignmentID ? assignmentID : undefined,
+                EventID: props.Id,
+                PosteID: posteID,
+                BenevoleID: benevoleID,
+                StartDate: props.StartTime.toString(),
+                EndDate: props.EndTime.toString(),
+            };
+
+            await dataManager.saveChanges(
+                {
+                    ...(assignment.Id
+                        ? { changedRecords: [assignment] }
+                        : { addedRecords: [assignment] }),
+                },
+                undefined,
+                "assignments"
+            );
+        } catch (error) {
+            console.error(
+                "Erreur lors de la sauvegarde de l'assignement:",
+                error
+            );
+        }
+    };
     return (
         <div>
             {props.elementType === "cell" ? (
@@ -151,38 +189,51 @@ export const QuickInfoContentTemplate = (props: {
                                 props.PosteIDs.length > 0 && (
                                     <div className="e-assignements">
                                         <h4>Postes à pourvoir</h4>
-                                        {props.PosteIDs.map((posteID: any) => (
-                                            <DropDownListComponent
-                                                key={posteID}
-                                                dataSource={benevoleData.map(
-                                                    (b) => ({
-                                                        text: b.Name,
-                                                        value: b.Id,
-                                                    })
-                                                )}
-                                                fields={{
-                                                    text: "text",
-                                                    value: "value",
-                                                }}
-                                                placeholder={
-                                                    posteID
-                                                        ? postesData.find(
-                                                              (p) =>
-                                                                  p.Id ===
-                                                                  posteID
-                                                          )?.Name
-                                                        : ""
-                                                }
-                                                value={
-                                                    assignmentsData.find(
-                                                        (assignment) =>
-                                                            assignment.PosteID ===
-                                                            posteID
-                                                    )?.BenevoleID || ""
-                                                }
-                                                floatLabelType="Always"
-                                            />
-                                        ))}
+                                        {props.PosteIDs.map((posteID: any) => {
+                                            const assignment =
+                                                assignmentsData.find(
+                                                    (assignment) =>
+                                                        assignment.PosteID ===
+                                                        posteID
+                                                );
+
+                                            return (
+                                                <DropDownListComponent
+                                                    key={posteID}
+                                                    dataSource={benevoleData.map(
+                                                        (b) => ({
+                                                            text: b.Name,
+                                                            value: b.Id,
+                                                        })
+                                                    )}
+                                                    fields={{
+                                                        text: "text",
+                                                        value: "value",
+                                                    }}
+                                                    placeholder={
+                                                        posteID
+                                                            ? postesData.find(
+                                                                  (p) =>
+                                                                      p.Id ===
+                                                                      posteID
+                                                              )?.Name
+                                                            : ""
+                                                    }
+                                                    value={
+                                                        assignment?.BenevoleID ||
+                                                        ""
+                                                    }
+                                                    floatLabelType="Always"
+                                                    change={(e: any) =>
+                                                        handleAssignmentChange(
+                                                            posteID,
+                                                            e.value,
+                                                            assignment?.Id
+                                                        )
+                                                    }
+                                                />
+                                            );
+                                        })}
                                     </div>
                                 )}
                         </div>

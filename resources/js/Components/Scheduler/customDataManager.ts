@@ -3,7 +3,11 @@ import { DataManager, Query } from "@syncfusion/ej2-data";
 import { store } from "@/app/store";
 import { ReferenceDataState } from "@/types/referenceData";
 import { Assignment } from "@/types/assignment";
-import { addAssignments, removeAssignments } from "@/app/assignmentsSlice";
+import {
+    addAssignments,
+    updateAssignments,
+    removeAssignments,
+} from "@/app/assignmentsSlice";
 export class CustomDataManager extends DataManager {
     private static instance: CustomDataManager;
     private dispatch = store.dispatch;
@@ -131,12 +135,14 @@ export class CustomDataManager extends DataManager {
             this.dispatch(addAssignments(changes.addedRecords));
         }
         if (changes.changedRecords && changes.changedRecords.length > 0) {
-            //this.dispatch(updateAssignments(changes.changedRecords));
+            this.dispatch(updateAssignments(changes.changedRecords));
         }
         if (changes.deletedRecords && changes.deletedRecords.length > 0) {
-            const idsToDelete = changes.deletedRecords.map(
-                (record: any) => record.Id
-            );
+            const idsToDelete = changes.deletedRecords.map((record: any) => {
+                console.log("Removing assignment with ID:", record);
+                return record.Id;
+            });
+            console.log("Removing assignments:", idsToDelete);
             this.dispatch(removeAssignments(idsToDelete));
         }
         return Promise.resolve(changes);
