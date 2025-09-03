@@ -11,10 +11,7 @@ import {
     ResourcesDirective,
     ResourceDirective,
 } from "@syncfusion/ej2-react-schedule";
-import {
-    QuickInfoContentTemplate,
-    enrichQuickInfoProps,
-} from "./QuickInfoContentTemplate";
+import { QuickInfoContentTemplate } from "./QuickInfoContentTemplate";
 import {
     PopupOpenEventArgs,
     PopupCloseEventArgs,
@@ -30,17 +27,10 @@ export default function Scheduler() {
     const dataManager = CustomDataManager.getInstance();
 
     const referenceData = dataManager.getReferenceData();
-    const assignments = dataManager.getAssignments();
 
     const quickInfoTemplates: QuickInfoTemplatesModel = {
         content: (props: any) => {
-            // Enrichir les props avec les données de référence
-            const enrichedProps = enrichQuickInfoProps(
-                props,
-                referenceData,
-                assignments
-            );
-            return QuickInfoContentTemplate(enrichedProps);
+            return QuickInfoContentTemplate(props);
         },
     };
 
@@ -61,12 +51,7 @@ export default function Scheduler() {
     const onPopupClose = (args: PopupCloseEventArgs) => {};
 
     const agendaEventTemplate = (props: any) => {
-        const enrichedProps = enrichQuickInfoProps(
-            props,
-            referenceData,
-            assignments
-        );
-        return AgendaEventTemplate(enrichedProps);
+        return AgendaEventTemplate(props);
     };
 
     return (

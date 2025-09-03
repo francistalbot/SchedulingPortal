@@ -20,7 +20,38 @@ export class CustomDataManager extends DataManager {
     }
 
     executeQuery(query: any): Promise<any> {
-        console.log("executeQuery called with:", query);
+        if (query && query.tableName === "assignments") {
+            const startDateParam = query.params.find(
+                (p: any) => p.key === "StartDate"
+            );
+            const eventIdParam = query.params.find(
+                (p: any) => p.key === "EventId"
+            );
+            const startDate = new Date(startDateParam.value);
+            const eventId = eventIdParam.value;
+            const getAssignments = store.getState().assignments.assignments;
+            const filteredAssignments = getAssignments.filter(
+                (assignment: any) => {
+                    return (
+                        assignment.EventID === eventId &&
+                        new Date(
+                            assignment.StartDate.toString()
+                        ).getFullYear() === new Date(startDate).getFullYear() &&
+                        new Date(assignment.StartDate.toString()).getMonth() ===
+                            new Date(startDate).getMonth() &&
+                        new Date(assignment.StartDate.toString()).getDate() ===
+                            new Date(startDate).getDate()
+                    );
+                }
+            );
+            return new Promise((resolve) => {
+                resolve({
+                    result: filteredAssignments,
+                    count: filteredAssignments.length,
+                });
+            });
+        }
+
         const allEvents = store.getState().events.events;
         let filteredEvents = allEvents;
 

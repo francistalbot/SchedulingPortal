@@ -11,18 +11,54 @@ import {
 import { Assignment } from "@/types/assignment";
 import { Event } from "@/types/event";
 import { DropDownListComponent } from "@syncfusion/ej2-react-dropdowns";
+import { CustomDataManager } from "./customDataManager";
+import { useEffect, useState } from "react";
 
 // https://ej2.syncfusion.com/react/documentation/api/schedule/#quickinfotemplates
 // https://ej2.syncfusion.com/react/documentation/schedule/how-to/show-quick-info-template?cs-save-lang=1&cs-lang=ts
 export const QuickInfoContentTemplate = (props: {
     [key: string]: any;
 }): JSX.Element => {
+    const dataManager = CustomDataManager.getInstance();
+    const [assignmentsData, setAssignmentsData] = useState<Assignment[]>(() => {
+        if (props.elementType === "cell" || !props.Id) {
+            return [];
+        }
+        dataManager
+            .executeQuery({
+                tableName: "assignments",
+                params: [
+                    { key: "StartDate", value: props.StartTime },
+                    { key: "EventId", value: props.Id },
+                ],
+            })
+            .then((response) => {
+                setAssignmentsData(response.result || []);
+            });
+        return []; // Valeur initiale vide
+    });
+
+    const referenceData = dataManager.getReferenceData();
+    const eventData = props as Event;
+
+    // Trouver les entités spécifiques à l'événement
+    const comiteData = eventData.ComiteID
+        ? referenceData.comites.find((c: Comite) => c.Id === eventData.ComiteID)
+        : undefined;
+    const succursalData = eventData.SuccursalID
+        ? referenceData.succursales.find(
+              (s: Succursale) => s.Id === eventData.SuccursalID
+          )
+        : undefined;
+    const postesData = eventData.PosteIDs
+        ? referenceData.postes.filter((p: Poste) =>
+              eventData.PosteIDs!.includes(p.Id)
+          )
+        : [];
+    const benevoleData = referenceData.benevoles.filter(
+        (b: Benevole) => b.ComiteId === comiteData?.Id
+    );
     console.log("props:", props);
-    const comiteData = props.comite;
-    const succursalData = props.succursal;
-    const postesData = props.eventPostes as Poste[];
-    const benevoleData = (props.comiteBenevoles as Benevole[]) || [];
-    const assignmentsData = props.currentAssignments as Assignment[];
 
     const intl: Internationalization = new Internationalization();
 
@@ -55,7 +91,6 @@ export const QuickInfoContentTemplate = (props: {
             return `${startDate} (${startHour}) - ${endDate} (${endHour})`;
         }
     };
-
     return (
         <div>
             {props.elementType === "cell" ? (
@@ -114,10 +149,11 @@ export const QuickInfoContentTemplate = (props: {
                             {/* Affichage des postes à pourvoir */}
                             {props.PosteIDs !== undefined &&
                                 props.PosteIDs.length > 0 && (
-                                    <div className="postes-section">
+                                    <div className="e-assignements">
                                         <h4>Postes à pourvoir</h4>
                                         {props.PosteIDs.map((posteID: any) => (
                                             <DropDownListComponent
+                                                key={posteID}
                                                 dataSource={benevoleData.map(
                                                     (b) => ({
                                                         text: b.Name,
@@ -155,50 +191,4 @@ export const QuickInfoContentTemplate = (props: {
             )}
         </div>
     );
-};
-
-export const enrichQuickInfoProps = (
-    props: { [key: string]: any },
-    referenceData: ReferenceDataState,
-    assignments: Assignment[]
-) => {
-    if (props.elementType == "cell") return props;
-    const eventData = props as Event;
-
-    // Trouver les entités spécifiques à l'événement
-    const comite = eventData.ComiteID
-        ? referenceData.comites.find((c: Comite) => c.Id === eventData.ComiteID)
-        : undefined;
-    const succursale = eventData.SuccursalID
-        ? referenceData.succursales.find(
-              (s: Succursale) => s.Id === eventData.SuccursalID
-          )
-        : undefined;
-    const eventPostes = eventData.PosteIDs
-        ? referenceData.postes.filter((p: Poste) =>
-              eventData.PosteIDs!.includes(p.Id)
-          )
-        : [];
-    const comiteBenevoles = referenceData.benevoles.filter(
-        (b: Benevole) => b.ComiteId === comite?.Id
-    );
-    const currentAssignments = assignments.filter(
-        (assignment: Assignment) =>
-            assignment.EventID === props.Id &&
-            new Date(assignment.Date.toString()).getFullYear() ===
-                new Date(props.StartTime).getFullYear() &&
-            new Date(assignment.Date.toString()).getMonth() ===
-                new Date(props.StartTime).getMonth() &&
-            new Date(assignment.Date.toString()).getDate() ===
-                new Date(props.StartTime).getDate() &&
-            props.PosteIDs.includes(assignment.PosteID)
-    );
-    return {
-        ...props,
-        comite,
-        succursale,
-        eventPostes,
-        comiteBenevoles,
-        currentAssignments,
-    };
 };
