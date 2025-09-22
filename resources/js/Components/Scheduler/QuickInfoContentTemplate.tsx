@@ -20,23 +20,10 @@ export const QuickInfoContentTemplate = (props: {
     [key: string]: any;
 }): JSX.Element => {
     const dataManager = CustomDataManager.getInstance();
-    const [assignmentsData, setAssignmentsData] = useState<Assignment[]>(() => {
-        if (props.elementType === "cell" || !props.Id) {
-            return [];
-        }
-        dataManager
-            .executeQuery({
-                tableName: "assignments",
-                params: [
-                    { key: "StartDate", value: props.StartTime },
-                    { key: "EventId", value: props.Id },
-                ],
-            })
-            .then((response) => {
-                setAssignmentsData(response.result || []);
-            });
-        return []; // Valeur initiale vide
-    });
+    const [assignments, saveAssignment] = useAssignments(
+        props.Id,
+        props.StartTime
+    );
 
     const referenceData = dataManager.getReferenceData();
     const eventData = props as Event;
@@ -89,44 +76,6 @@ export const QuickInfoContentTemplate = (props: {
             if (startDate === endDate)
                 return `${startDate} (${startHour} - ${endHour})`;
             return `${startDate} (${startHour}) - ${endDate} (${endHour})`;
-        }
-    };
-    const handleAssignmentChange = async (
-        posteID: number,
-        benevoleID: number,
-        assignmentID: number | undefined
-    ) => {
-        try {
-            // Trouver l'assignement actuel pour ce poste
-            const currentAssignment = assignmentsData.find(
-                (assignment) => assignment.PosteID === posteID
-            );
-            // Vérifier si la valeur a vraiment changé
-            if (currentAssignment?.BenevoleID === benevoleID) return;
-
-            const assignment = {
-                Id: assignmentID ? assignmentID : undefined,
-                EventID: props.Id,
-                PosteID: posteID,
-                BenevoleID: benevoleID,
-                StartDate: props.StartTime.toString(),
-                EndDate: props.EndTime.toString(),
-            };
-
-            await dataManager.saveChanges(
-                {
-                    ...(assignment.Id
-                        ? { changedRecords: [assignment] }
-                        : { addedRecords: [assignment] }),
-                },
-                undefined,
-                "assignments"
-            );
-        } catch (error) {
-            console.error(
-                "Erreur lors de la sauvegarde de l'assignement:",
-                error
-            );
         }
     };
     return (
@@ -189,51 +138,18 @@ export const QuickInfoContentTemplate = (props: {
                                 props.PosteIDs.length > 0 && (
                                     <div className="e-assignements">
                                         <h4>Postes à pourvoir</h4>
-                                        {props.PosteIDs.map((posteID: any) => {
-                                            const assignment =
-                                                assignmentsData.find(
-                                                    (assignment) =>
-                                                        assignment.PosteID ===
-                                                        posteID
-                                                );
-
-                                            return (
-                                                <DropDownListComponent
-                                                    key={posteID}
-                                                    dataSource={benevoleData.map(
-                                                        (b) => ({
-                                                            text: b.Name,
-                                                            value: b.Id,
-                                                        })
-                                                    )}
-                                                    fields={{
-                                                        text: "text",
-                                                        value: "value",
-                                                    }}
-                                                    placeholder={
-                                                        posteID
-                                                            ? postesData.find(
-                                                                  (p) =>
-                                                                      p.Id ===
-                                                                      posteID
-                                                              )?.Name
-                                                            : ""
-                                                    }
-                                                    value={
-                                                        assignment?.BenevoleID ||
-                                                        ""
-                                                    }
-                                                    floatLabelType="Always"
-                                                    change={(e: any) =>
-                                                        handleAssignmentChange(
-                                                            posteID,
-                                                            e.value,
-                                                            assignment?.Id
-                                                        )
-                                                    }
-                                                />
-                                            );
-                                        })}
+                                        {props.PosteIDs.map((posteID: any) => (
+                                            <PosteAssignmentDropdown
+                                                key={posteID}
+                                                posteID={posteID}
+                                                benevoleData={benevoleData}
+                                                postesData={postesData}
+                                                assignments={assignments}
+                                                onAssignmentChange={
+                                                    saveAssignment
+                                                }
+                                            />
+                                        ))}
                                     </div>
                                 )}
                         </div>
@@ -242,4 +158,129 @@ export const QuickInfoContentTemplate = (props: {
             )}
         </div>
     );
+};
+
+interface PosteAssignmentDropdownProps {
+    posteID: number;
+    benevoleData: Benevole[];
+    postesData: Poste[];
+    assignments: Assignment[];
+    onAssignmentChange: (
+        posteID: number,
+        benevoleID: number,
+        assignmentID?: number
+    ) => void;
+}
+
+const PosteAssignmentDropdown = ({
+    posteID,
+    benevoleData,
+    postesData,
+    assignments,
+    onAssignmentChange,
+}: PosteAssignmentDropdownProps): JSX.Element => {
+    const assignment = assignments.find(
+        (assignment) => assignment.PosteID === posteID
+    );
+
+    return (
+        <DropDownListComponent
+            key={posteID}
+            dataSource={benevoleData.map((b) => ({
+                text: b.Name,
+                value: b.Id,
+            }))}
+            fields={{
+                text: "text",
+                value: "value",
+            }}
+            placeholder={
+                posteID ? postesData.find((p) => p.Id === posteID)?.Name : ""
+            }
+            value={assignment?.BenevoleID || ""}
+            floatLabelType="Always"
+            change={(e: any) =>
+                onAssignmentChange(posteID, e.value, assignment?.Id)
+            }
+        />
+    );
+};
+
+const useAssignments = (
+    eventId: string,
+    startDate: string
+): [
+    Assignment[],
+    (
+        posteID: number,
+        benevoleID: number,
+        assignmentID?: number
+    ) => Promise<void>
+] => {
+    const [assignments, setAssignments] = useState<Assignment[]>([]);
+    const dataManager = CustomDataManager.getInstance();
+
+    const loadAssignments = async () => {
+        const response = await dataManager.executeQuery({
+            tableName: "assignments",
+            params: [
+                { key: "StartDate", value: startDate },
+                { key: "EventId", value: eventId },
+            ],
+        });
+        setAssignments(response.result || []);
+    };
+
+    useEffect(() => {
+        loadAssignments();
+    }, []);
+
+    const saveAssignment = async (
+        posteID: number,
+        benevoleID: number,
+        assignmentID?: number
+    ) => {
+        try {
+            // Vérifier si la valeur a vraiment changé
+            let currentAssignment;
+            if (assignmentID) {
+                currentAssignment = assignments.find(
+                    (assignment) => assignment.Id === posteID
+                );
+                if (currentAssignment?.BenevoleID === benevoleID) {
+                    return;
+                }
+            }
+
+            const assignment = {
+                Id: assignmentID || undefined,
+                EventID: eventId,
+                PosteID: posteID,
+                BenevoleID: benevoleID,
+                StartDate: startDate,
+                EndDate: startDate, // Ou calculer la date de fin appropriée
+            };
+
+            await dataManager.saveChanges(
+                {
+                    ...(assignment.Id
+                        ? { changedRecords: [assignment] }
+                        : { addedRecords: [assignment] }),
+                },
+                undefined,
+                "assignments"
+            );
+
+            // Recharger les assignements après modification
+            await loadAssignments();
+        } catch (error) {
+            console.error(
+                "Erreur lors de la sauvegarde de l'assignement:",
+                error
+            );
+            throw error;
+        }
+    };
+
+    return [assignments, saveAssignment];
 };
