@@ -1,5 +1,5 @@
 import { store } from '@/app/store';
-import Scheduler from '@/Components/Scheduler/Scheduler';
+import { Main } from '@/Components/Main/Main';
 import { PageProps } from '@/types';
 import { Head, Link } from '@inertiajs/react';
 import { Provider } from 'react-redux';
@@ -72,11 +72,9 @@ export default function Welcome({
                             </nav>
                         </header>
 
-                        <main className="mt-6">
                             <Provider store={store}>
-                                <Scheduler />
+                                <Main />
                             </Provider>
-                        </main>
 
                         <footer className="py-16 text-center text-sm text-black dark:text-white/70">
                             Laravel v{laravelVersion} (PHP v{phpVersion})
